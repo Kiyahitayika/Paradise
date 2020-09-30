@@ -252,6 +252,9 @@
 	if(!src.stat && src.mind && src.mind.changeling && src.mind.changeling.chosen_sting && (istype(A, /mob/living/carbon)) && (A != src))
 		changeNext_click(5)
 		mind.changeling.chosen_sting.try_to_sting(src, A)
+	else if(!src.stat && src.dna.species.sting_check && (istype(A, /mob/living/carbon)) && (A != src))
+		changeNext_click(5)
+		src.dna.species.wryn_sting(src, A)
 	else
 		..()
 

@@ -49,6 +49,82 @@
 	//Default styles for created mobs.
 	default_hair = "Antennae"
 
+	var/datum/action/innate/wryn_sting/wryn_sting
+	sting_check = FALSE
+
+//No flying while using magboots or hardsuit - toggle on/off action
+
+/datum/species/wryn/on_species_gain(mob/living/carbon/human/H)
+    ..()
+    wryn_sting = new
+    wryn_sting.Grant(H)
+
+/datum/species/wryn/on_species_loss(mob/living/carbon/human/H)
+    ..()
+    if(wryn_sting)
+        wryn_sting.Remove(H)
+
+/* Stinger */
+
+//Define the Sting Action
+/datum/action/innate/wryn_sting
+	name = "Wryn Sting"
+	desc = "Readies Wryn Sting for stinging."
+	button_icon_state = "wryn_sting_off"
+
+
+//What happens when you click the Button?
+/datum/action/innate/wryn_sting/Trigger()
+	if(..())
+		UpdateButtonIcon()
+
+//Update the Icon and run some Code
+/datum/action/innate/wryn_sting/UpdateButtonIcon()
+	var/mob/living/carbon/user = owner
+	if(!user.dna.species.sting_check)
+
+		button_icon_state = "wryn_sting_on"
+		name = "Wryn Stinger \[READY\]"
+		button.name = name
+		user.visible_message("<span class='warning'> [user] prepares to use their Wryn stinger!</span>")
+		to_chat(user, "<span class='notice'>You prepare your Wryn stinger, use alt+click or middle mouse button to sting your target!</span>")
+		user.dna.species.sting_check = TRUE
+
+	else
+
+		button_icon_state = "wryn_sting_off"
+		name = "Wryn Stinger"
+		button.name = name
+		user.visible_message("<span class='warning'[user] retracts their Wryn stinger.</span>")
+		to_chat(user, "<span class='warning'>You decide you don't want to sting anyone for now and retract your Wryn stinger.</span>")
+		user.dna.species.sting_check = FALSE
+
+	..()
+
+
+//What does the Action do?
+/datum/species/wryn/wryn_sting(mob/living/U, mob/living/T)
+	if((U.restrained() && U.pulledby) || U.buckled)
+		to_chat(U, "<span class='warning'>You need freedom of movement to sting someone!</span>")
+		return
+	if(U.getStaminaLoss() >= 50)
+		to_chat(U, "<span class='warning'>Rest before stinging again!</span>")
+		return
+	if(T in orange(1))
+		var/obj/item/organ/external/O = T.get_organ(pick("l_leg", "r_leg", "l_foot", "r_foot", "groin"))
+		U.visible_message("<span class='danger'>[U] stings [T] in [O] with their Wryn stinger! </span>", "<span class='danger'> You sting [T] in [O] with your Wryn stinger!</span>")
+		U.adjustStaminaLoss(25)
+		var/dam = rand(3,12)
+		T.apply_damage(dam, BURN, O)
+		playsound(U.loc, 'sound/weapons/sear.ogg', 50, 0)
+		add_attack_logs(U, T, "Stung by Wryn Stinger - [dam] Burn damage to [O].")
+		if(U.restrained())
+			if(prob(50))
+			U.apply_damage(2, TOX, T) //apply tiny Tox damage to Target, rather than Stun
+			U.visible_message("<span class='danger'>[U] is looking a little green!</span>", "<span class='danger'>You feel a little ill!</span>")
+			return
+		if(U.getStaminaLoss() >= 60)
+			to_chat(U, "<span class='warning'>You feel too tired to use your Wryn Stinger at the moment.</span>")
 
 /datum/species/wryn/handle_death(gibbed, mob/living/carbon/human/H)
 	for(var/mob/living/carbon/C in GLOB.alive_mob_list)

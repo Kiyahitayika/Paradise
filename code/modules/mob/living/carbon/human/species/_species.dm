@@ -57,6 +57,7 @@
 	var/punchdamagelow = 0       //lowest possible punch damage
 	var/punchdamagehigh = 9      //highest possible punch damage
 	var/punchstunthreshold = 9	 //damage at which punches from this race will stun //yes it should be to the attacked race but it's not useful that way even if it's logical
+	var/sting_check = FALSE		//Boolean for Wryn Sting
 	var/list/default_genes = list()
 
 	var/ventcrawler = VENTCRAWLER_NONE //Determines if the mob can go through the vents.
@@ -319,6 +320,15 @@
 		if((H.health <= HEALTH_THRESHOLD_CRIT) && takes_crit_damage)
 			H.adjustBruteLoss(1)
 	return
+
+// Wryn Sting
+/datum/species/proc/wryn_sting(mob/living/H, mob/living/M)
+	return
+
+//Handles changing icobase for species that have multiple skin colors.
+/datum/species/proc/updatespeciescolor(mob/living/carbon/human/H)
+	return
+
 
 /datum/species/proc/handle_dna(mob/living/carbon/human/H, remove) //Handles DNA mutations, as that doesn't work at init. Make sure you call genemutcheck on any blocks changed here
 	return
