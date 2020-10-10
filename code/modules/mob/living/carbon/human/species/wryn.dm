@@ -8,9 +8,6 @@
 	tail = "wryntail"
 	punchdamagelow = 0
 	punchdamagehigh = 1
-	speed_mod = 1
-	warning_low_pressure = -300
-	hazard_low_pressure = 1
 	blurb = "The wryn (r-in, singular r-in) are a humanoid race that possess many bee-like features. Originating from Alveare they \
 	have adapted extremely well to cold environments though have lost most of their muscles over generations.\
 	In order to communicate and work with multi-species crew Wryn were forced to take on names. Wryn have tended towards using only \
