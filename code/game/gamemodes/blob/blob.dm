@@ -68,7 +68,7 @@ GLOBAL_LIST_EMPTY(blob_nodes)
 	return candidates
 
 
-/datum/game_mode/blob/proc/blobize(var/mob/living/carbon/human/blob)
+/datum/game_mode/blob/proc/blobize(mob/living/carbon/human/blob)
 	var/datum/mind/blobmind = blob.mind
 	if(!istype(blobmind))
 		return 0
@@ -84,7 +84,7 @@ GLOBAL_LIST_EMPTY(blob_nodes)
 		burst_blob(blobmind)
 	return 1
 
-/datum/game_mode/blob/proc/make_blobs(var/count)
+/datum/game_mode/blob/proc/make_blobs(count)
 	var/list/candidates = get_blob_candidates()
 	var/mob/living/carbon/human/blob = null
 	count=min(count, candidates.len)
@@ -102,7 +102,7 @@ GLOBAL_LIST_EMPTY(blob_nodes)
 	to_chat(world, "You must kill it all while minimizing the damage to the station.")
 
 
-/datum/game_mode/blob/proc/greet_blob(var/datum/mind/blob)
+/datum/game_mode/blob/proc/greet_blob(datum/mind/blob)
 	to_chat(blob.current, "<span class='userdanger'>You are infected by the Blob!</span>")
 	to_chat(blob.current, "<b>Your body is ready to give spawn to a new blob core which will eat this station.</b>")
 	to_chat(blob.current, "<b>Find a good location to spawn the core and then take control and overwhelm the station!</b>")
@@ -111,7 +111,7 @@ GLOBAL_LIST_EMPTY(blob_nodes)
 	SEND_SOUND(blob.current, 'sound/magic/mutate.ogg')
 	return
 
-/datum/game_mode/blob/proc/show_message(var/message)
+/datum/game_mode/blob/proc/show_message(message)
 	for(var/datum/mind/blob in infected_crew)
 		to_chat(blob.current, message)
 
@@ -119,7 +119,7 @@ GLOBAL_LIST_EMPTY(blob_nodes)
 	for(var/datum/mind/blob in infected_crew)
 		burst_blob(blob)
 
-/datum/game_mode/blob/proc/burst_blob(var/datum/mind/blob, var/warned=0)
+/datum/game_mode/blob/proc/burst_blob(datum/mind/blob, warned=0)
 	var/client/blob_client = null
 	var/turf/location = null
 
@@ -195,7 +195,7 @@ GLOBAL_LIST_EMPTY(blob_nodes)
 
 	return ..()
 
-/datum/game_mode/blob/proc/stage(var/stage)
+/datum/game_mode/blob/proc/stage(stage)
 	switch(stage)
 		if(0)
 			send_intercept(1)

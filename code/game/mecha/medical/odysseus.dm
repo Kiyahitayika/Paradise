@@ -2,7 +2,7 @@
 	desc = "These exosuits are developed and produced by Vey-Med. (&copy; All rights reserved)."
 	name = "Odysseus"
 	icon_state = "odysseus"
-	base_icon_state = "odysseus"
+	initial_icon = "odysseus"
 	step_in = 3
 	max_temperature = 15000
 	max_integrity = 120
@@ -13,16 +13,7 @@
 	normal_step_energy_drain = 6
 	var/builtin_hud_user = 0
 
-	cosmetics_enabled = TRUE
-	basecoat_icon = "odysseus-shell"
-	basecoat_colour = "#7b7b7b"
-	glow_icon = "odysseus-glow"
-	glow_colour = "#005000"
-	icon_decal_root	= "odysseus-decal"
-	decals = list()
-	default_decals = list(new/datum/mecha/mecha_decal/odysseus_visor)
-
-/obj/mecha/medical/odysseus/moved_inside(var/mob/living/carbon/human/H)
+/obj/mecha/medical/odysseus/moved_inside(mob/living/carbon/human/H)
 	. = ..()
 	if(. && ishuman(H))
 		if(istype(H.glasses, /obj/item/clothing/glasses/hud))
@@ -32,7 +23,7 @@
 			A.add_hud_to(H)
 			builtin_hud_user = 1
 
-/obj/mecha/medical/odysseus/mmi_moved_inside(var/obj/item/mmi/mmi_as_oc, mob/user)
+/obj/mecha/medical/odysseus/mmi_moved_inside(obj/item/mmi/mmi_as_oc, mob/user)
 	. = ..()
 	if(.)
 		if(occupant.client)
