@@ -148,8 +148,8 @@
 		src.toggle(user, by_hand = TRUE)
 
 // Called when a crate is delivered by MULE at a location, for notifying purposes
-/obj/structure/closet/crate/proc/notifyRecipient(destination)
-	var/msg = "[capitalize(name)] has arrived at [destination]."
+/obj/structure/closet/crate/proc/notifyRecipient(var/destination)
+	var/list/msg = list("[capitalize(name)] has arrived at [destination].")
 	if(destination in announce_beacons)
 		for(var/obj/machinery/requests_console/D in GLOB.allRequestConsoles)
 			if(D.department in src.announce_beacons[destination])
@@ -311,7 +311,7 @@
 
 /obj/structure/closet/crate/contraband
 	name = "Poster crate"
-	desc = "A random assortment of posters manufactured by providers NOT listed under Ark Soft's whitelist."
+	desc = "A random assortment of posters manufactured by providers NOT listed under Nanotrasen's whitelist."
 	icon_state = "crate"
 	icon_opened = "crateopen"
 	icon_closed = "crate"
