@@ -23,7 +23,8 @@
 
 	eyes = "vox_eyes_s"
 
-	species_traits = list(NO_SCAN, NO_GERMS, NO_DECAY, IS_WHITELISTED, NOTRANSSTING)
+	species_traits = list(NO_CLONESCAN, IS_WHITELISTED, NOTRANSSTING)
+	inherent_traits = list(TRAIT_NOGERMS, TRAIT_NODECAY)
 	clothing_flags = HAS_UNDERWEAR | HAS_UNDERSHIRT | HAS_SOCKS //Species-fitted 'em all.
 	dietflags = DIET_OMNI
 	bodyflags = HAS_ICON_SKIN_TONE | HAS_TAIL | TAIL_WAGGING | TAIL_OVERLAPPED | HAS_BODY_MARKINGS | HAS_TAIL_MARKINGS
@@ -75,9 +76,6 @@
 
 	speciesbox = /obj/item/storage/box/survival_vox
 
-/datum/species/vox/handle_dna(mob/living/carbon/human/H, remove)
-	..()
-
 /datum/species/vox/handle_death(gibbed, mob/living/carbon/human/H)
 	H.stop_tail_wagging()
 
@@ -104,16 +102,6 @@
 /datum/species/vox/on_species_gain(mob/living/carbon/human/H)
 	..()
 	updatespeciescolor(H)
-	H.resize = 0.8
-	H.update_transform()
-	H.move_resist=MOVE_FORCE_WEAK
-	H.update_icons()
-
-/datum/species/vox/on_species_loss(mob/living/carbon/human/H)
-	..()
-	H.resize = 1.25
-	H.update_transform()
-	H.move_resist = MOVE_FORCE_NORMAL
 	H.update_icons()
 
 /datum/species/vox/updatespeciescolor(mob/living/carbon/human/H, owner_sensitive = 1) //Handling species-specific skin-tones for the Vox race.
@@ -163,23 +151,13 @@
 	unarmed_type = /datum/unarmed_attack/claws/armalis
 	blacklisted = TRUE
 
-	warning_low_pressure = 50
-	hazard_low_pressure = 0
-
-	cold_level_1 = 80
-	cold_level_2 = 50
-	cold_level_3 = 0
-
-	heat_level_1 = 2000
-	heat_level_2 = 3000
-	heat_level_3 = 4000
-
 	brute_mod = 0.2
 	burn_mod = 0.2
 
 	eyes = "blank_eyes"
 
-	species_traits = list(NO_SCAN, NO_GERMS, NO_DECAY, NO_BLOOD, NO_PAIN)
+	species_traits = list(NO_CLONESCAN, NO_BLOOD, IS_WHITELISTED)
+	inherent_traits = list(TRAIT_RESISTHEAT, TRAIT_RESISTCOLD, TRAIT_RESISTHIGHPRESSURE, TRAIT_RESISTLOWPRESSURE, TRAIT_NOFIRE, TRAIT_NOPAIN, TRAIT_NOGERMS, TRAIT_NODECAY)
 	clothing_flags = 0 //IDK if you've ever seen underwear on an Armalis, but it ain't pretty.
 	bodyflags = HAS_TAIL
 	dies_at_threshold = TRUE

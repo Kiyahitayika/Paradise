@@ -35,7 +35,8 @@
 		"antennae" =    /obj/item/organ/internal/wryn/hivenode
 		)
 
-	species_traits = list(HIVEMIND, IS_WHITELISTED, LIPS, NO_BREATHE, NO_SCAN)
+	species_traits = list(LIPS, IS_WHITELISTED, NO_CLONESCAN, HIVEMIND)
+	inherent_traits = list(TRAIT_NOBREATH)
 	clothing_flags = HAS_UNDERWEAR | HAS_UNDERSHIRT | HAS_SOCKS
 	bodyflags = HAS_SKIN_COLOR
 	dietflags = DIET_HERB		//bees feed off nectar, so bee people feed off plants too
@@ -103,7 +104,7 @@
 	..()
 
 //Select a Target from a List
-/datum/action/innate/wryn_sting/proc/select_target(mob/living/carbon/human/user)
+/datum/action/innate/wryn_sting/proc/select_target(var/mob/living/carbon/human/user)
 	var/list/names = list()
 	for(var/mob/living/carbon/human/M in orange(1))
 		names += M

@@ -5,12 +5,8 @@
 // partname is the name of a body part
 // amount is a num from 1 to 100
 /mob/living/carbon/human/proc/pain(partname, amount)
-	if(stat == (DEAD | ANESTHETIZED))
-		return				//No messages when Anesthetized or Dead
-	if(status_flags & FAKEDEATH)
-		return				//No messages when Fake Dead.
-	if(stat == UNCONSCIOUS)	//You can't sleep through the pain.
-		WakeUp()			//This is going to come back to bite us hard with antags.
+	if(stat >= UNCONSCIOUS)
+		return
 	if(reagents.has_reagent("sal_acid"))
 		return
 	if(reagents.has_reagent("morphine"))
@@ -35,13 +31,10 @@
 
 // message is the custom message to be displayed
 /mob/living/carbon/human/proc/custom_pain(message)
-	if(stat == (DEAD | ANESTHETIZED))
-		return				//No messages when Anesthetized or Dead
-	if(status_flags & FAKEDEATH)
-		return				//No messages when Fake Dead.
-	if(stat == UNCONSCIOUS)	//You can't sleep through the pain.
-		WakeUp()			//This is going to come back to bite us hard with antags.
-	if(NO_PAIN in dna.species.species_traits)
+	if(stat >= UNCONSCIOUS)
+		return
+
+	if(HAS_TRAIT(src, TRAIT_NOPAIN))
 		return
 	if(reagents.has_reagent("morphine"))
 		return
@@ -57,12 +50,11 @@
 	next_pain_time = world.time + 100
 
 /mob/living/carbon/human/proc/handle_pain()
-	// not when Anesthetized or Dead
-	if(stat == (DEAD | ANESTHETIZED))
+	// not when sleeping
+
+	if(stat >= UNCONSCIOUS)
 		return
-	if(status_flags & FAKEDEATH)
-		return
-	if(NO_PAIN in dna.species.species_traits)
+	if(HAS_TRAIT(src, TRAIT_NOPAIN))
 		return
 	if(reagents.has_reagent("morphine"))
 		return
