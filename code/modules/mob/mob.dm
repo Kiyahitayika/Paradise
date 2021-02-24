@@ -89,7 +89,7 @@
 				if(type & 1 && !has_vision(information_only=TRUE))
 					return
 	// Added voice muffling for Issue 41.
-	if(stat == (UNCONSCIOUS | ANESTHETIZED) || (sleeping > 0 && stat != DEAD))
+	if(stat == UNCONSCIOUS || (sleeping > 0 && stat != DEAD))
 		to_chat(src, "<I>... You can almost hear someone talking ...</I>")
 	else
 		to_chat(src, msg)
@@ -101,7 +101,7 @@
 // self_message (optional) is what the src mob sees  e.g. "You do something!"
 // blind_message (optional) is what blind people will hear e.g. "You hear something!"
 
-/mob/visible_message(message, self_message, blind_message)
+/mob/visible_message(var/message, var/self_message, var/blind_message)
 	for(var/mob/M in get_mobs_in_view(7, src))
 		if(M.see_invisible < invisibility)
 			continue //can't view the invisible
@@ -114,7 +114,7 @@
 // Use for objects performing visible actions
 // message is output to anyone who can see, e.g. "The [src] does something!"
 // blind_message (optional) is what blind people will hear e.g. "You hear something!"
-/atom/proc/visible_message(message, blind_message)
+/atom/proc/visible_message(var/message, var/blind_message)
 	for(var/mob/M in get_mobs_in_view(7, src))
 		if(!M.client)
 			continue
@@ -196,7 +196,7 @@
 //This is a SAFE proc. Use this instead of equip_to_slot()!
 //set del_on_fail to have it delete W if it fails to equip
 //set disable_warning to disable the 'you are unable to equip that' warning.
-/mob/proc/equip_to_slot_if_possible(obj/item/W, slot, del_on_fail = 0, disable_warning = 0)
+/mob/proc/equip_to_slot_if_possible(obj/item/W, slot, del_on_fail = FALSE, disable_warning = FALSE, initial = FALSE)
 	if(!istype(W)) return 0
 
 	if(!W.mob_can_equip(src, slot, disable_warning))
@@ -208,24 +208,24 @@
 
 		return 0
 
-	equip_to_slot(W, slot) //This proc should not ever fail.
+	equip_to_slot(W, slot, initial) //This proc should not ever fail.
 	return 1
 
 //This is an UNSAFE proc. It merely handles the actual job of equipping. All the checks on whether you can or can't eqip need to be done before! Use mob_can_equip() for that task.
 //In most cases you will want to use equip_to_slot_if_possible()
-/mob/proc/equip_to_slot(obj/item/W, slot)
+/mob/proc/equip_to_slot(obj/item/W, slot, initial = FALSE)
 	return
 
 //This is just a commonly used configuration for the equip_to_slot_if_possible() proc, used to equip people when the rounds tarts and when events happen and such.
-/mob/proc/equip_to_slot_or_del(obj/item/W as obj, slot)
-	return equip_to_slot_if_possible(W, slot, TRUE, TRUE)
+/mob/proc/equip_to_slot_or_del(obj/item/W, slot, initial = FALSE)
+	return equip_to_slot_if_possible(W, slot, TRUE, TRUE, initial)
 
 // Convinience proc.  Collects crap that fails to equip either onto the mob's back, or drops it.
 // Used in job equipping so shit doesn't pile up at the start loc.
-/mob/living/carbon/human/proc/equip_or_collect(obj/item/W, slot)
+/mob/living/carbon/human/proc/equip_or_collect(obj/item/W, slot, initial = FALSE)
 	if(W.mob_can_equip(src, slot, 1))
 		//Mob can equip.  Equip it.
-		equip_to_slot_or_del(W, slot)
+		equip_to_slot_or_del(W, slot, initial)
 	else
 		//Mob can't equip it.  Put it their backpack or toss it on the floor
 		if(istype(back, /obj/item/storage))
@@ -419,8 +419,6 @@ GLOBAL_LIST_INIT(slot_equipment_priority, list( \
 					if(!disable_warning)
 						to_chat(H, "<span class='warning'>You need a jumpsuit before you can attach this [name].</span>")
 					return 0
-				if(slot_flags & SLOT_DENYPOCKET)
-					return
 				if( w_class <= WEIGHT_CLASS_SMALL || (slot_flags & SLOT_POCKET) )
 					return 1
 			if(slot_r_store)
@@ -429,8 +427,6 @@ GLOBAL_LIST_INIT(slot_equipment_priority, list( \
 				if(!H.w_uniform)
 					if(!disable_warning)
 						to_chat(H, "<span class='warning'>You need a jumpsuit before you can attach this [name].</span>")
-					return 0
-				if(slot_flags & SLOT_DENYPOCKET)
 					return 0
 				if( w_class <= WEIGHT_CLASS_SMALL || (slot_flags & SLOT_POCKET) )
 					return 1
@@ -547,6 +543,17 @@ GLOBAL_LIST_INIT(slot_equipment_priority, list( \
 		if(hud_used)
 			client.screen = list()
 			hud_used.show_hud(hud_used.hud_version)
+
+/mob/setDir(new_dir)
+	if(forced_look)
+		if(isnum(forced_look))
+			dir = forced_look
+		else
+			var/atom/A = locateUID(forced_look)
+			if(istype(A))
+				dir = get_cardinal_dir(src, A)
+		return
+	. = ..()
 
 /mob/proc/show_inv(mob/user)
 	user.set_machine(src)
@@ -722,7 +729,7 @@ GLOBAL_LIST_INIT(slot_equipment_priority, list( \
 
 		flavor_text = msg
 
-/mob/proc/print_flavor_text(shrink = TRUE)
+/mob/proc/print_flavor_text(var/shrink = TRUE)
 	if(flavor_text && flavor_text != "")
 		var/msg = replacetext(flavor_text, "\n", " ")
 		if(length(msg) <= 40 || !shrink)
@@ -1019,7 +1026,7 @@ GLOBAL_LIST_INIT(slot_equipment_priority, list( \
 				statpanel_things += A
 			statpanel(listed_turf.name, null, statpanel_things)
 
-/mob/proc/add_spell_to_statpanel(obj/effect/proc_holder/spell/S)
+/mob/proc/add_spell_to_statpanel(var/obj/effect/proc_holder/spell/S)
 	switch(S.charge_type)
 		if("recharge")
 			statpanel(S.panel,"[S.charge_counter/10.0]/[S.charge_max/10]",S)
@@ -1039,95 +1046,37 @@ GLOBAL_LIST_INIT(slot_equipment_priority, list( \
 	if(restrained())					return 0
 	return 1
 
-/mob/proc/fall(forced)
+/mob/proc/fall(var/forced)
 	drop_l_hand()
 	drop_r_hand()
 
 /mob/proc/facedir(ndir)
 	if(!canface())
-		return FALSE
+		return 0
 	setDir(ndir)
 	client.move_delay += movement_delay()
-	return TRUE
+	return 1
 
-/mob/setDir(new_dir)
-	if(forced_look)
-		if(isnum(forced_look))
-			dir = forced_look
-		else
-			var/atom/A = locateUID(forced_look)
-			if(istype(A))
-				dir = get_cardinal_dir(src, A)
-		return
-	. = ..()
 
 /mob/verb/eastface()
-	set hidden = TRUE
+	set hidden = 1
 	return facedir(EAST)
 
+
 /mob/verb/westface()
-	set hidden = TRUE
+	set hidden = 1
 	return facedir(WEST)
 
+
 /mob/verb/northface()
-	set hidden = TRUE
+	set hidden = 1
 	return facedir(NORTH)
 
+
 /mob/verb/southface()
-	set hidden = TRUE
+	set hidden = 1
 	return facedir(SOUTH)
 
-/mob/proc/canshift()
-	if(!canface() || pulling || pulledby)
-		return FALSE
-	var/turf/T = get_turf(src)
-	if(!T)
-		return FALSE
-	var/list/range = view(0, T)	// Same tile as usr
-	for(var/atom/A in range)
-		if(ismob(A))
-			var/mob/M = A
-			if(M != src)
-				return FALSE
-	return TRUE
-
-/mob/verb/eastshift()
-	set hidden = TRUE
-	if(!canshift())
-		return FALSE
-	if(pixel_x < 10)
-		pixel_x++
-		is_shifted = TRUE
-
-/mob/verb/westshift()
-	set hidden = TRUE
-	if(!canshift())
-		return FALSE
-	if(pixel_x > -10)
-		pixel_x--
-		is_shifted = TRUE
-
-/mob/verb/northshift()
-	set hidden = TRUE
-	if(!canshift())
-		return FALSE
-	if(pixel_y < 0)		//No vertical pixel-shifting, please
-		pixel_y++
-		is_shifted = TRUE
-
-/mob/verb/southshift()
-	set hidden = TRUE
-	if(!canshift())
-		return FALSE
-	if(pixel_y > 0)		//No vertical pixel-shifting, please
-		pixel_y--
-		is_shifted = TRUE
-
-/mob/proc/get_standard_pixel_x_offset(lying = 0)
-	return initial(pixel_x)
-
-/mob/proc/get_standard_pixel_y_offset(lying = 0)
-	return initial(pixel_y)
 
 /mob/proc/IsAdvancedToolUser()//This might need a rename but it should replace the can this mob use things check
 	return FALSE
