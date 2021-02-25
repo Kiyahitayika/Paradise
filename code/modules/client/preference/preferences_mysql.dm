@@ -10,17 +10,13 @@
 					toggles,
 					toggles_2,
 					sound,
-					volume,
+					volume_mixer,
 					lastchangelog,
 					exp,
 					clientfps,
 					atklog,
 					fuid,
-					parallax,
-					max_chat_length,
-					chat_on_map,
-					see_chat_non_mob,
-					antag_raffle_tickets
+					parallax
 					FROM [format_table_name("player")]
 					WHERE ckey=:ckey"}, list(
 						"ckey" = C.ckey
@@ -42,17 +38,13 @@
 		toggles = text2num(query.item[7])
 		toggles2 = text2num(query.item[8])
 		sound = text2num(query.item[9])
-		volume = text2num(query.item[10])
+		volume_mixer = deserialize_volume_mixer(query.item[10])
 		lastchangelog = query.item[11]
 		exp = query.item[12]
 		clientfps = text2num(query.item[13])
 		atklog = text2num(query.item[14])
 		fuid = text2num(query.item[15])
 		parallax = text2num(query.item[16])
-		max_chat_length = text2num(query.item[17])
-		chat_on_map = text2num(query.item[18])
-		see_chat_non_mob = text2num(query.item[19])
-		antag_raffle_tickets = text2num(query.item[20])
 
 	qdel(query)
 
@@ -65,17 +57,12 @@
 	sound			= sanitize_integer(sound, 0, 65535, initial(sound))
 	UI_style_color	= sanitize_hexcolor(UI_style_color, initial(UI_style_color))
 	UI_style_alpha	= sanitize_integer(UI_style_alpha, 0, 255, initial(UI_style_alpha))
-	volume			= sanitize_integer(volume, 0, 100, initial(volume))
 	lastchangelog	= sanitize_text(lastchangelog, initial(lastchangelog))
 	exp	= sanitize_text(exp, initial(exp))
 	clientfps = sanitize_integer(clientfps, 0, 1000, initial(clientfps))
 	atklog = sanitize_integer(atklog, 0, 100, initial(atklog))
 	fuid = sanitize_integer(fuid, 0, 10000000, initial(fuid))
 	parallax = sanitize_integer(parallax, 0, 16, initial(parallax))
-	max_chat_length 	= sanitize_integer(max_chat_length, 1, CHAT_MESSAGE_MAX_LENGTH, initial(max_chat_length))
-	chat_on_map			= sanitize_integer(chat_on_map, 0, 1, initial(chat_on_map))
-	see_chat_non_mob	= sanitize_integer(see_chat_non_mob, 0, 1, initial(see_chat_non_mob))
-	antag_raffle_tickets = sanitize_integer(antag_raffle_tickets, 1, 1000000, initial(antag_raffle_tickets))
 	return 1
 
 /datum/preferences/proc/save_preferences(client/C)
@@ -85,6 +72,11 @@
 		if(!(role in GLOB.special_roles))
 			log_runtime(EXCEPTION("[C.key] had a malformed role entry: '[role]'. Removing!"), src)
 			be_special -= role
+
+	// We're saving volume_mixer here as well, so no point in keeping the timer running
+	if(volume_mixer_saving)
+		deltimer(volume_mixer_saving)
+		volume_mixer_saving = null
 
 	var/datum/db_query/query = SSdbcore.NewQuery({"UPDATE [format_table_name("player")]
 				SET
@@ -98,42 +90,37 @@
 					toggles_2=:toggles2,
 					atklog=:atklog,
 					sound=:sound,
-					volume=:volume,
+					volume_mixer=:volume_mixer,
 					lastchangelog=:lastchangelog,
 					clientfps=:clientfps,
-					parallax=:parallax,
-					max_chat_length=:maxchatlength,
-					chat_on_map=:chatonmap,
-					see_chat_non_mob=:seechatnonmob
+					parallax=:parallax
 					WHERE ckey=:ckey"}, list(
-					// OH GOD THE PARAMETERS
-					"ooccolour" = ooccolor,
-					"ui_style" = UI_style,
-					"ui_colour" = UI_style_color,
-					"ui_alpha" = UI_style_alpha,
-					"berole" = list2params(be_special),
-					"defaultslot" = default_slot,
-					// Even though its a number in the DB, you have to use num2text here, otherwise byond adds scientific notation to the number
-					"toggles" = num2text(toggles, CEILING(log(10, (TOGGLES_TOTAL)), 1)),
-					"toggles2" = num2text(toggles2, CEILING(log(10, (TOGGLES_2_TOTAL)), 1)),
-					"atklog" = atklog,
-					"sound" = sound,
-					"volume" = volume,
-					"lastchangelog" = lastchangelog,
-					"clientfps" = clientfps,
-					"parallax" = parallax,
-					"maxchatlength" = max_chat_length,
-					"chatonmap" = chat_on_map,
-					"seechatnonmob" = see_chat_non_mob,
-					"ckey" = C.ckey
-				))
+						// OH GOD THE PARAMETERS
+						"ooccolour" = ooccolor,
+						"ui_style" = UI_style,
+						"ui_colour" = UI_style_color,
+						"ui_alpha" = UI_style_alpha,
+						"berole" = list2params(be_special),
+						"defaultslot" = default_slot,
+						// Even though its a number in the DB, you have to use num2text here, otherwise byond adds scientific notation to the number
+						"toggles" = num2text(toggles, CEILING(log(10, (TOGGLES_TOTAL)), 1)),
+						"toggles2" = num2text(toggles2, CEILING(log(10, (TOGGLES_2_TOTAL)), 1)),
+						"atklog" = atklog,
+						"sound" = sound,
+						"volume_mixer" = serialize_volume_mixer(volume_mixer),
+						"lastchangelog" = lastchangelog,
+						"clientfps" = clientfps,
+						"parallax" = parallax,
+						"ckey" = C.ckey
+					)
+					)
 
 	if(!query.warn_execute())
 		qdel(query)
 		return
 
 	qdel(query)
-	return TRUE
+	return 1
 
 /datum/preferences/proc/load_character(client/C,slot)
 	saved = FALSE
@@ -199,7 +186,7 @@
 					player_alt_titles,
 					organ_data,
 					rlimb_data,
-					ark_soft_relation,
+					nanotrasen_relation,
 					speciesprefs,
 					socks,
 					body_accessory,
@@ -276,7 +263,7 @@
 		player_alt_titles = params2list(query.item[44])
 		organ_data = params2list(query.item[45])
 		rlimb_data = params2list(query.item[46])
-		ark_soft_relation = query.item[47]
+		nanotrasen_relation = query.item[47]
 		speciesprefs = text2num(query.item[48])
 
 		//socks
@@ -294,7 +281,7 @@
 	real_name		= reject_bad_name(real_name, 1)
 	if(isnull(species)) species = "Human"
 	if(isnull(language)) language = "None"
-	if(isnull(ark_soft_relation)) ark_soft_relation = initial(ark_soft_relation)
+	if(isnull(nanotrasen_relation)) nanotrasen_relation = initial(nanotrasen_relation)
 	if(isnull(speciesprefs)) speciesprefs = initial(speciesprefs)
 	if(!real_name) real_name = random_name(gender,species)
 	be_random_name	= sanitize_integer(be_random_name, 0, 1, initial(be_random_name))
@@ -369,12 +356,6 @@
 	if(!isemptylist(loadout_gear))
 		gearlist = list2params(loadout_gear)
 
-	// correct fields that cannot be null before saving any characters
-	if(isnull(alt_head))
-		alt_head = initial(alt_head)
-	if(isnull(autohiss_mode))
-		autohiss_mode = initial(autohiss_mode)
-
 	var/datum/db_query/firstquery = SSdbcore.NewQuery("SELECT slot FROM [format_table_name("characters")] WHERE ckey=:ckey ORDER BY slot", list(
 		"ckey" = C.ckey
 	))
@@ -431,7 +412,7 @@
 												disabilities=:disabilities,
 												organ_data=:organlist,
 												rlimb_data=:rlimblist,
-												ark_soft_relation=:ark_soft_relation,
+												nanotrasen_relation=:nanotrasen_relation,
 												speciesprefs=:speciesprefs,
 												socks=:socks,
 												body_accessory=:body_accessory,
@@ -486,7 +467,7 @@
 													"disabilities" = disabilities,
 													"organlist" = (organlist ? organlist : ""),
 													"rlimblist" = (rlimblist ? rlimblist : ""),
-													"ark_soft_relation" = ark_soft_relation,
+													"nanotrasen_relation" = nanotrasen_relation,
 													"speciesprefs" = speciesprefs,
 													"socks" = socks,
 													"body_accessory" = (body_accessory ? body_accessory : ""),
@@ -494,7 +475,8 @@
 													"autohiss_mode" = autohiss_mode,
 													"ckey" = C.ckey,
 													"slot" = default_slot
-												))
+												)
+												)
 
 			if(!query.warn_execute())
 				qdel(firstquery)
@@ -531,7 +513,7 @@
 											sec_record,
 											gen_record,
 											player_alt_titles,
-											disabilities, organ_data, rlimb_data, ark_soft_relation, speciesprefs,
+											disabilities, organ_data, rlimb_data, nanotrasen_relation, speciesprefs,
 											socks, body_accessory, gear, autohiss)
 
 					VALUES
@@ -559,7 +541,7 @@
 											:sec_record,
 											:gen_record,
 											:playertitlelist,
-											:disabilities, :organlist, :rlimblist, :ark_soft_relation, :speciesprefs,
+											:disabilities, :organlist, :rlimblist, :nanotrasen_relation, :speciesprefs,
 											:socks, :body_accessory, :gearlist, :autohiss_mode)
 
 	"}, list(
@@ -612,7 +594,7 @@
 		"disabilities" = disabilities,
 		"organlist" = (organlist ? organlist : ""),
 		"rlimblist" = (rlimblist ? rlimblist : ""),
-		"ark_soft_relation" = ark_soft_relation,
+		"nanotrasen_relation" = nanotrasen_relation,
 		"speciesprefs" = speciesprefs,
 		"socks" = socks,
 		"body_accessory" = (body_accessory ? body_accessory : ""),
@@ -626,7 +608,7 @@
 
 	qdel(query)
 	saved = TRUE
-	return TRUE
+	return 1
 
 /datum/preferences/proc/load_random_character_slot(client/C)
 	var/datum/db_query/query = SSdbcore.NewQuery("SELECT slot FROM [format_table_name("characters")] WHERE ckey=:ckey ORDER BY slot", list(
@@ -678,4 +660,25 @@
 	qdel(delete_query)
 
 	saved = FALSE
+	return TRUE
+
+/**
+  * Saves [/datum/preferences/proc/volume_mixer] for the current client.
+  */
+/datum/preferences/proc/save_volume_mixer()
+	volume_mixer_saving = null
+
+	var/datum/db_query/update_query = SSdbcore.NewQuery(
+		"UPDATE [format_table_name("player")] SET volume_mixer=:volume_mixer WHERE ckey=:ckey",
+		list(
+			"volume_mixer" = serialize_volume_mixer(volume_mixer),
+			"ckey" = parent.ckey
+		)
+	)
+
+	if(!update_query.warn_execute())
+		qdel(update_query)
+		return FALSE
+
+	qdel(update_query)
 	return TRUE
