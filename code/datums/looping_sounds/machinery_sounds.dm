@@ -12,13 +12,7 @@
 	mid_sounds = list('sound/machines/sm/loops/calm.ogg' = 1)
 	mid_length = 60
 	volume = 40
-	extra_range = 10
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/datum/looping_sound/microwave
-	start_sound = 'sound/machines/microwave/microwave-start.ogg'
-	start_length = 1
-	mid_sounds = list('sound/machines/microwave/microwave-mid1.ogg' = 4, 'sound/machines/microwave/microwave-mid2.ogg' = 2, 'sound/machines/microwave/microwave-mid1.ogg' = 4)
-	mid_length = 10
-	volume = 90
+	extra_range = 25
+	falloff_exponent = 10
+	falloff_distance = 5
+	vary = TRUE
