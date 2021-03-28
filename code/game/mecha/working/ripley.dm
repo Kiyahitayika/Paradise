@@ -71,7 +71,7 @@
 		overlays += create_overlay(basedecal, decal_layer = 2)
 
 /obj/mecha/working/ripley/firefighter
-	desc = "Standart APLU chassis was refitted with additional thermal protection and cistern."
+	desc = "A standard APLU chassis that was refitted with additional thermal protection and a cistern."
 	name = "APLU \"Firefighter\""
 	icon_state = "ripley"
 	base_icon_state = "ripley"
