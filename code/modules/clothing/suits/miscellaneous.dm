@@ -81,6 +81,13 @@
 	flags_inv = HIDEGLOVES|HIDESHOES|HIDEJUMPSUIT
 
 
+/obj/item/clothing/suit/greatcoat
+	name = "great coat"
+	desc = "A Nazi great coat." //A what
+	icon_state = "nazi"
+	item_state = "nazi"
+
+
 /obj/item/clothing/suit/johnny_coat
 	name = "johnny~~ coat"
 	desc = "Johnny~~"
@@ -546,12 +553,6 @@
 	icon_state = "nt_hoodie"
 	hoodtype = /obj/item/clothing/head/hooded/hood/blue
 
-/obj/item/clothing/suit/hooded/hoodie/ark
-	name = "ArkSoft hoodie"
-	desc = "A blue hoodie with the ArkSoft logo on the back."
-	icon_state = "ark_hoodie"
-	hoodtype = /obj/item/clothing/head/hooded/hood/blue
-
 /obj/item/clothing/suit/hooded/hoodie/tp
 	name = "Tharsis Polytech hoodie"
 	desc = "A dark hoodie with the Tharsis Polytech logo on the back."
@@ -707,7 +708,7 @@
 	icon_state = "white_jacket"
 
 /obj/item/clothing/suit/xenos
-	name = "xenos suit"
+	name = "xeno suit"
 	desc = "A suit made out of chitinous alien hide."
 	icon_state = "xenos"
 	item_state = "xenos_helm"
@@ -761,7 +762,7 @@
 	flags_inv = HIDEGLOVES|HIDESHOES|HIDEJUMPSUIT|HIDETAIL
 
 /obj/item/clothing/head/mercy_hood
-	name = "Mercy Hood"
+	name = "mercy Hood"
 	desc = "A soft white hood made of a synthetic fiber that provides improved protection against biohazards. Its elegant design allows a clear field of vision."
 	icon_state = "mercy_hood"
 	item_state = "mercy_hood"
@@ -790,7 +791,7 @@
 
 /obj/item/clothing/suit/jacket/pilot
 	name = "security bomber jacket"
-	desc = "A stylish and worn-in armoured black bomber jacket emblazoned with the Ark Soft Security crest on the left breast. Looks rugged."
+	desc = "A stylish and worn-in armoured black bomber jacket emblazoned with the NT Security crest on the left breast. Looks rugged."
 	w_class = WEIGHT_CLASS_NORMAL
 	icon_state = "bombersec"
 	item_state = "bombersec"
@@ -838,8 +839,8 @@
 	cold_protection = UPPER_TORSO|LOWER_TORSO|ARMS|LEGS
 
 /obj/item/clothing/suit/officercoat
-	name = "Clown Officer's Coat"
-	desc = "A classy clown officer's overcoat, also designed by Hugo Boss."
+	name = "clown officer's coat"
+	desc = "A classy clown officer's overcoat, also designed by Hugo Boss." //What and why
 	icon_state = "officersuit"
 	item_state = "officersuit"
 	ignore_suitadjust = 0
@@ -851,7 +852,7 @@
 		)
 
 /obj/item/clothing/suit/soldiercoat
-	name = "Clown Soldier's Coat"
+	name = "clown soldier's coat"
 	desc = "An overcoat for the clown soldier, to keep him warm during those cold winter nights on the front."
 	icon_state = "soldiersuit"
 	item_state = "soldiersuit"
@@ -894,7 +895,7 @@
 		A.UpdateButtonIcon()
 
 /obj/item/clothing/suit/lordadmiral
-	name = "Lord Admiral's Coat"
+	name = "lord admiral's coat"
 	desc = "You'll be the Ruler of the King's Navy in no time."
 	icon_state = "lordadmiral"
 	item_state = "lordadmiral"
@@ -911,7 +912,7 @@
 ///Advanced Protective Suit, AKA, God Mode in wearable form.
 
 /obj/item/clothing/suit/advanced_protective_suit
-	name = "Advanced Protective Suit"
+	name = "advanced protective suit"
 	desc = "An incredibly advanced and complex suit; it has so many buttons and dials as to be incomprehensible."
 	w_class = WEIGHT_CLASS_BULKY
 	icon_state = "bomb"
