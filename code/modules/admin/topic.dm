@@ -2186,6 +2186,7 @@
 			ptypes += "Hellwater Cookie"
 			ptypes += "Hunter"
 			ptypes += "Crew Traitor"
+			ptypes += "Floor Cluwne"
 			ptypes += "Shamebrero"
 			ptypes += "Dust"
 		var/punishment = input(owner, "How would you like to smite [M]?", "Its good to be baaaad...", "") as null|anything in ptypes
@@ -2287,6 +2288,12 @@
 					to_chat(usr, "<span class='warning'>ERROR: Unable to find any valid candidate to send after [H].</span>")
 					return
 				logmsg = "crew traitor."
+			if("Floor Cluwne")
+				var/turf/T = get_turf(M)
+				var/mob/living/simple_animal/hostile/floor_cluwne/FC = new /mob/living/simple_animal/hostile/floor_cluwne(T)
+				FC.smiting = TRUE
+				FC.Acquire_Victim(M)
+				logmsg = "floor cluwne"
 			if("Shamebrero")
 				if(H.head)
 					H.unEquip(H.head, TRUE)
@@ -2334,21 +2341,21 @@
 		P.name = "Central Command - paper"
 		var/stypes = list("Handle it yourselves!","Illegible fax","Fax not signed","Not Right Now","You are wasting our time", "Keep up the good work", "ERT Instructions")
 		var/stype = input(src.owner, "Which type of standard reply do you wish to send to [H]?","Choose your paperwork", "") as null|anything in stypes
-		var/tmsg = "<font face='Verdana' color='black'><center><img src = 'arksoftlogo.png'><BR><BR><BR><font size='4'><B>Ark Soft Research Station [GLOB.using_map.station_short]</B></font><BR><BR><BR><font size='4'>[GLOB.using_map.dock_name] Communications Department Report</font></center><BR><BR>"
+		var/tmsg = "<font face='Verdana' color='black'><center><img src = 'ntlogo.png'><BR><BR><BR><font size='4'><b>Nanotrasen Science Station [GLOB.using_map.station_short]</b></font><BR><BR><BR><font size='4'>NAS Trurl Communications Department Report</font></center><BR><BR>"
 		if(stype == "Handle it yourselves!")
-			tmsg += "Greetings, esteemed crewmember. Your fax has been <B><I>DECLINED</I></B> automatically by [GLOB.using_map.dock_name] Fax Registration.<BR><BR>Please proceed in accordance with Standard Operating Procedure and/or Space Law. You are fully trained to handle this situation without Central Command intervention.<BR><BR><i><small>This is an automatic message.</small>"
+			tmsg += "Greetings, esteemed crewmember. Your fax has been <b><I>DECLINED</I></b> automatically by NAS Trurl Fax Registration.<BR><BR>Please proceed in accordance with Standard Operating Procedure and/or Space Law. You are fully trained to handle this situation without Central Command intervention.<BR><BR><i><small>This is an automatic message.</small>"
 		else if(stype == "Illegible fax")
-			tmsg += "Greetings, esteemed crewmember. Your fax has been <B><I>DECLINED</I></B> automatically by [GLOB.using_map.dock_name] Fax Registration.<BR><BR>Your fax's grammar, syntax and/or typography are of a sub-par level and do not allow us to understand the contents of the message.<BR><BR>Please consult your nearest dictionary and/or thesaurus and try again.<BR><BR><i><small>This is an automatic message.</small>"
+			tmsg += "Greetings, esteemed crewmember. Your fax has been <b><I>DECLINED</I></b> automatically by NAS Trurl Fax Registration.<BR><BR>Your fax's grammar, syntax and/or typography are of a sub-par level and do not allow us to understand the contents of the message.<BR><BR>Please consult your nearest dictionary and/or thesaurus and try again.<BR><BR><i><small>This is an automatic message.</small>"
 		else if(stype == "Fax not signed")
-			tmsg += "Greetings, esteemed crewmember. Your fax has been <B><I>DECLINED</I></B> automatically by [GLOB.using_map.dock_name] Fax Registration.<BR><BR>Your fax has not been correctly signed and, as such, we cannot verify your identity.<BR><BR>Please sign your faxes before sending them so that we may verify your identity.<BR><BR><i><small>This is an automatic message.</small>"
+			tmsg += "Greetings, esteemed crewmember. Your fax has been <b><I>DECLINED</I></b> automatically by NAS Trurl Fax Registration.<BR><BR>Your fax has not been correctly signed and, as such, we cannot verify your identity.<BR><BR>Please sign your faxes before sending them so that we may verify your identity.<BR><BR><i><small>This is an automatic message.</small>"
 		else if(stype == "Not Right Now")
-			tmsg += "Greetings, esteemed crewmember. Your fax has been <B><I>DECLINED</I></B> automatically by [GLOB.using_map.dock_name] Fax Registration.<BR><BR>Due to pressing concerns of a matter above your current paygrade, we are unable to provide assistance in whatever matter your fax referenced.<BR><BR>This can be either due to a power outage, bureaucratic audit, pest infestation, Ascendance Event, corgi outbreak, or any other situation that would affect the proper functioning of the [GLOB.using_map.dock_name].<BR><BR>Please try again later.<BR><BR><i><small>This is an automatic message.</small>"
+			tmsg += "Greetings, esteemed crewmember. Your fax has been <b><I>DECLINED</I></b> automatically by NAS Trurl Fax Registration.<BR><BR>Due to pressing concerns of a matter above your current paygrade, we are unable to provide assistance in whatever matter your fax referenced.<BR><BR>This can be either due to a power outage, bureaucratic audit, pest infestation, Ascendance Event, corgi outbreak, or any other situation that would affect the proper functioning of the NAS Trurl.<BR><BR>Please try again later.<BR><BR><i><small>This is an automatic message.</small>"
 		else if(stype == "You are wasting our time")
-			tmsg += "Greetings, esteemed crewmember. Your fax has been <B><I>DECLINED</I></B> automatically by [GLOB.using_map.dock_name] Fax Registration.<BR><BR>In the interest of preventing further mismanagement of company resources, please avoid wasting our time with such petty drivel.<BR><BR>Do kindly remember that we expect our workforce to maintain at least a semi-decent level of profesionalism. Do not test our patience.<BR><BR><i><small>This is an automatic message.</i></small>"
+			tmsg += "Greetings, esteemed crewmember. Your fax has been <b><I>DECLINED</I></b> automatically by NAS Trurl Fax Registration.<BR><BR>In the interest of preventing further mismanagement of company resources, please avoid wasting our time with such petty drivel.<BR><BR>Do kindly remember that we expect our workforce to maintain at least a semi-decent level of profesionalism. Do not test our patience.<BR><BR><i><small>This is an automatic message.</i></small>"
 		else if(stype == "Keep up the good work")
-			tmsg += "Greetings, esteemed crewmember. Your fax has been received successfully by [GLOB.using_map.dock_name] Fax Registration.<BR><BR>We at the [GLOB.using_map.dock_name] appreciate the good work that you have done here, and sincerely recommend that you continue such a display of dedication to the company.<BR><BR><i><small>This is absolutely not an automated message.</i></small>"
+			tmsg += "Greetings, esteemed crewmember. Your fax has been received successfully by NAS Trurl Fax Registration.<BR><BR>We at the NAS Trurl appreciate the good work that you have done here, and sincerely recommend that you continue such a display of dedication to the company.<BR><BR><i><small>This is absolutely not an automated message.</i></small>"
 		else if(stype == "ERT Instructions")
-			tmsg += "Greetings, esteemed crewmember. Your fax has been <B><I>DECLINED</I></B> automatically by [GLOB.using_map.dock_name] Fax Registration.<BR><BR>Please utilize the Card Swipers if you wish to call for an ERT.<BR><BR><i><small>This is an automated message.</i></small>"
+			tmsg += "Greetings, esteemed crewmember. Your fax has been <b><I>DECLINED</I></b> automatically by NAS Trurl Fax Registration.<BR><BR>Please utilize the Card Swipers if you wish to call for an ERT.<BR><BR><i><small>This is an automated message.</i></small>"
 		else
 			return
 		tmsg += "</font>"
@@ -2473,9 +2480,9 @@
 		var/destination
 		var/notify
 		var/obj/item/paper/P
-		var/use_letterheard = alert("Use letterhead? If so, do not add your own header or a footer. Type and format only your actual message.",,"Ark Soft","Syndicate", "No")
+		var/use_letterheard = alert("Use letterhead? If so, do not add your own header or a footer. Type and format only your actual message.",,"Nanotrasen","Syndicate", "No")
 		switch(use_letterheard)
-			if("Ark Soft")
+			if("Nanotrasen")
 				P = new /obj/item/paper/central_command(null)
 			if("Syndicate")
 				P = new /obj/item/paper/syndicate(null)
@@ -2923,25 +2930,32 @@
 					GLOB.event_announcement.Announce("Feedback surge detected in mass-distributions systems. Artifical gravity has been disabled whilst the system reinitializes. Further failures may result in a gravitational collapse and formation of blackholes. Have a nice day.")
 
 			if("power")
-				SSblackbox.record_feedback("tally", "admin_secrets_fun_used", 1, "Power All APCs")
-				log_admin("[key_name(usr)] made all areas powered", 1)
-				message_admins("<span class='notice'>[key_name_admin(usr)] made all areas powered</span>", 1)
-				power_restore()
+				switch(alert("What Would You Like to Do?", "Make All Areas Powered", "Power all APCs", "Repair all APCs", "Repair and Power APCs")) //Alert notification in this code for standarization purposes
+					if("Power all APCs")
+						power_restore(TRUE, 0)
+						SSblackbox.record_feedback("tally", "admin_secrets_fun_used", 1, "Power all APCs")
+						log_and_message_admins("<span class='notice'>[key_name_admin(usr)] powered all APCs</span>", 1)
+					if("Repair all APCs")
+						power_restore(TRUE, 1)
+						SSblackbox.record_feedback("tally", "admin_secrets_fun_used", 1, "Repair all APCs")
+						log_and_message_admins("<span class='notice'>[key_name_admin(usr)] repaired all APCs</span>", 1)
+					if("Repair and Power APCs")
+						power_restore(TRUE, 2)
+						SSblackbox.record_feedback("tally", "admin_secrets_fun_used", 1, "Repair and Power all APCs")
+						log_and_message_admins("<span class='notice'>[key_name_admin(usr)] repaired and powered all APCs</span>", 1)
 			if("unpower")
-				SSblackbox.record_feedback("tally", "admin_secrets_fun_used", 1, "Depower All APCs")
-				log_admin("[key_name(usr)] made all areas unpowered", 1)
-				message_admins("<span class='notice'>[key_name_admin(usr)] made all areas unpowered</span>", 1)
-				power_failure()
+				if(alert("What Would You Like to Do?", "Make All Areas Unpowered", "Depower all APCs", "Short out APCs") == "Depower all APCs")
+					depower_apcs()
+					SSblackbox.record_feedback("tally", "admin_secrets_fun_used", 1, "Depower all APCs")
+					log_and_message_admins("<span class='notice'>[key_name_admin(usr)] made all areas unpowered</span>", 1)
+				else
+					power_failure()
+					SSblackbox.record_feedback("tally", "admin_secrets_fun_used", 1, "Short out APCs")
+					log_and_message_admins("<span class='notice'>[key_name_admin(usr)] has shorted APCs</span>", 1)
 			if("quickpower")
-				SSblackbox.record_feedback("tally", "admin_secrets_fun_used", 1, "Power All SMESs")
-				log_admin("[key_name(usr)] made all SMESs powered", 1)
-				message_admins("<span class='notice'>[key_name_admin(usr)] made all SMESs powered</span>", 1)
 				power_restore_quick()
-			if("limitlesspower")
-				SSblackbox.record_feedback("tally", "admin_secrets_fun_used", 1, "Supercharge Station SMESs")
-				log_admin("[key_name(usr)] gave all SMESs limitless power", 1)
-				message_admins("<span class='notice'>[key_name_admin(usr)] gave all SMESs limitless power</span>", 1)
-				power_restore_limitless()
+				SSblackbox.record_feedback("tally", "admin_secrets_fun_used", 1, "Power All SMESs")
+				log_and_message_admins("<span class='notice'>[key_name(usr)] made all SMESs powered</span>", 1)
 			if("prisonwarp")
 				if(!SSticker)
 					alert("The game hasn't started yet!", null, null, null, null, null)
