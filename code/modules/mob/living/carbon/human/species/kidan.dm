@@ -7,7 +7,7 @@
 
 	brute_mod = 0.8
 
-	species_traits = list(IS_WHITELISTED)
+	species_traits = list(IS_WHITELISTED, NO_HAIR)
 	inherent_biotypes = MOB_ORGANIC | MOB_HUMANOID | MOB_BUG
 	clothing_flags = HAS_UNDERWEAR | HAS_UNDERSHIRT | HAS_SOCKS
 	bodyflags = HAS_HEAD_ACCESSORY | HAS_HEAD_MARKINGS | HAS_BODY_MARKINGS
